@@ -1,0 +1,39 @@
+import tweepy
+from tweepy import OAuthHandler
+ 
+consumer_key = '6ik7Q7tTY6SDspiTFexaFTetk'
+consumer_secret = 'FIFAFgFviLZ5JiLjovPGJblpjGVkMSZnoA7XfC3j5GOlUXqPYw'
+access_token = '1008066174427516929-NHZf0V7gCQ5xg5S7w3QiGXmu70xU0P'
+access_secret = '7hDInfjltdYgAUxtGALSZgp9ZrdixWclOP6Jz82NFLtg1'
+ 
+auth = OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_secret)
+ 
+api = tweepy.API(auth)
+
+for status in tweepy.Cursor(api.home_timeline).items(10):
+    # Process a single status
+    print(status.text)
+
+
+#Filtering Twitter data
+from tweepy import Stream
+from tweepy.streaming import StreamListener
+ 
+class MyListener(StreamListener):
+ 
+    def on_data(self, data):
+        try:
+            with open('python.json', 'a') as f:
+                f.write(data)
+                return True
+        except BaseException as e:
+            print("Error on_data: %s" % str(e))
+        return True
+ 
+    def on_error(self, status):
+        print(status)
+        return True
+ 
+twitter_stream = Stream(auth, MyListener())
+twitter_stream.filter(track=['#python'])
